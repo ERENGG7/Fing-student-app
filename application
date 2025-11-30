@@ -1,0 +1,298 @@
+#include<iostream>
+#include<string>
+#include<stdexcept>
+#include<thread>
+#include<chrono>
+#include<sstream>
+#include<map>
+
+//ANSII code for default color;font:
+#define RESET "\033[0m"
+
+//ANSII Fonts:
+#define BOLD "\033[1m"
+#define ITALIC_STYLE "\033[3m"
+
+//Colors codes ANSII:
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
+#define PURPLE "\033[35m"
+#define CYAN "\033[36m"
+#define WHITE "\033[37m"
+
+#define TITLE "_______PU_PAISII_HILENDARSKI_______  "
+
+//Structure for speciality.Only public:
+struct Speciality {
+	std::string speciality;
+	bool isRegular;
+	bool isNotRegular;
+};
+
+//Database for faculties 
+const std::map<int, std::string>PU_FACULTIES = {
+	{1,"ФМИ"},
+	{3,"Филологически факултет"},
+	{4,"Биологически факултет"},
+	{5,"Химически факултет"},
+	{6,"Педагогически факултет"},
+	{7,"Юридически факултет"},
+	{8,"ФИСН"},
+	{9,"Философо-исторически факултет"},
+	{13,"Физико-технологичен факултет"},
+};
+//Database for specialities 
+const std::map<int, Speciality>PU_SPECIALITIES = {
+
+				{126,{"Информатика",true,true}},
+				{156,{"Бизнес информационни технологии",true,true}},
+				{168,{"Софтуерни технологии и дизайн",true,true}},
+				{132,{"Софтуерно инжинерство",true,true}},
+				{105,{"Математика",true,false}},
+				{139,{"Бизнес математика",true,false}},
+				{123,{"Приложна математика",true,false}},
+				{118,{"Математика, информатика и информационни технологии",true,false}},
+				{165,{"Информационни технологии,математика и образователен мениджмънт",true,false}},
+				{154,{"Изкуствен интелект",true,false}},
+				{155,{"Информационна и мрежова сигурност",true,false}},
+				{301,{"Българска филология",true,true}},
+				{304,{"Английска филология",true,false}},
+				{302,{"Руска филология",true,true}},
+				{376,{"Френска филология",true,false}},
+				{303,{"Славянистика",true,false}},
+				{358,{"Лингвистика с ИТ",true,false}},
+				{371,{"Приложна лингвистика (АЕ)",true,false}},
+				{372,{"Приложна лингвистика (НЕ)",true,false}},
+				{382,{"Приложна лингвистика (ФЕ)",true,false}},
+				{381,{"Приложна лингвистика (ИЕ)",true,false}},
+				{380,{"Лингвистика с маркетинг",true,false}},
+				{392,{"Лингвистика с бизнес администрация",true,false}},
+				{313,{"БЕ И АЕ",true,false}},
+				{315,{"БЕ и НЕ",true,false}},
+				{316,{"БЕ и ФЕ",true,false}},
+				{398,{"БЕ и ИС",true,false}},
+				{317,{"Български език и история",true,true}},
+				{351,{"БЕ и Новогръцки език",true,false}},
+				{312,{"БЕ и РЕ",true,true}},
+				{348,{"БЕ и Турски език",true,false}},
+				{370,{"БЕ и Китайски език",true,false}},
+				{386,{"БЕ и Италиански език",true,false}},
+				{387,{"БЕ и Корейски език",true,false}},
+				{320,{"БЕ,гражданско образование и философия",true,false}},
+				{378,{"АЕ и културно наследство",true,false}},
+				{408,{"Биология",true,true }},
+				{454,{"Медицинска биология",true,false}},
+				{438,{"Молекулярна биология",true,false}},
+				{428,{"Микробиология и вирусология",true,false}},
+				{490,{"Фармацефтични биотехнологии",true,true}},
+				{409,{"Екология и опазване на околната среда",true,true}},
+				{488,{"Биология и АЕ",true,false}},
+				{422,{"Биология и химия",true,false}},
+				{418,{"Биология и физическо възпитание",true,false}},
+				{419,{"Педагогика на обучение по физическо възпитание",true,true}},
+				{557,{"Медицинска химия",true,false}},
+				{507,{"Химия",true,true}},
+				{511,{"Химия с маркетинг",true,false}},
+				{577,{"Химичен анализ и контрол на качеството",true,false}},
+				{569,{"Криминалистична химия",true,false}},
+				{550,{"Химия и АЕ",true,false}},
+				{624,{"Педагогика",true,false}},
+				{610,{"Предучилищна педагогика",true,false}},
+				{640,{"Предучилищна педагогика и чужд език",true,false}},
+				{614,{"Начална училищна педагогика",true,false}},
+				{641,{"Начална училищна педагогика и чужд език",true,false}},
+				{642,{"Предучилищна и начална училищна педагогика",true,true}},
+				{630,{"Социална педагогика",true,false}},
+				{629,{"Специална педагогика",true,false}},
+				{655,{"Психология",true,true}},
+				{631,{"Социални дейности",true,false}},
+				{669,{"Графичен дизайн с реклама",true,false}},
+				{695,{"Джаз и поп изпълнителско изкуство",true,false}},
+				{691,{"Музика",true,false}},
+				{667,{"Актьорство за драматичен театър",true,false}},
+				{696,{"Педагогика на обучение по изобразително изкуство",true,false}},
+				{697,{"Педагогика на обучение по музика",true,false}},
+				{725,{"Право",true,false}},
+				{845,{ "Маркетинг",true,true }},
+				{846,{"Бизнес мениджмънт",true,true}},
+				{899,{"Национална сигурност",true,true}},
+				{844,{"Политология",true,false}},
+				{831,{"Икономика и бизнес",true,true}},
+				{834,{"Международни икономически отношения",true,false}},
+				{893,{"Финанси",true,true}},
+				{878,{"Публична администрация",true,true}},
+				{894,{"Счетоводство",true,true}},
+				{862,{"Мениджмънт на туристическиш бизнес",true,true}},
+				{927,{"История",true,true}},
+				{935,{"Археология",true,false}},
+				{929,{"Документалистика и архивистика",true,false}},
+				{930,{"История и културно наследство",true,false}},
+				{961,{"Културна и социална антропология",true,false}},
+				{975,{"Социология на правото,икономиката и иновациите",true,false}},
+				{985,{"Социология и науки за човека",true,false}},
+				{963,{"Кулрурен туризъм",true,false}},
+				{936,{"Теология",true,false}},
+				{928,{"Философия",true,false}},
+				{989,{"Европейски изследвания,програми и проекти",true,false}},
+				{974,{"История и чужд език",true,false}},
+				{980,{"Гражданско образование, философия и чужд език ",true,false}},
+				{977,{"География,технологии и предприемачество",true,false}},
+				{1306,{"Инженерна физика",true,true}},
+				{1313,{"Технологии в медицината",true,false}},
+				{1323,{"Технологии в телекомуникациите",true,true}},
+				{1360,{"Екоенергийни технологии",true,false}},
+				{1314,{"Телекомуникационно инженерство",true,false}},
+				{1337,{"Телекомуникации с мениджмънт",true,false}},
+				{1381,{"Информационно и компютърно инжинерство",true,false}},
+				{1364,{"Хардуерни и софтуерни системи (База Смолян)",true,false}},
+				{1385,{"Автомобилна техника (База Смолян)",true,false}},
+				{1315,{"Компютърно индустриално инженерство (База Смолян)",true,false}},
+				{1387,{"Електроснабдяване и електрообзавеждане (База Смолян)",true,false}},
+				{1333,{"Автомобилни и електронни системи (База Смолян)",true,false}},
+				{1388,{"Информационно и компютърно инженерство с мениджмънт (База Смолян)",true,false}},
+				{1321,{"Обучение по природни науки б\nпрогимназиален етап на училищното образование",true,true}}
+};
+//Function for Print title:
+void printTitle() {
+	std::cout << BLUE << BOLD << ITALIC_STYLE << TITLE << RESET;
+}
+void pauseProgram() {
+	/*std::cout << "\033[2J\033[1;1H";for MacOS & Linux*/
+	system("cls");
+}
+void printInfo() {
+	std::cout << YELLOW << "При въвеждане на факултетен номер на студент,"
+		<< "\nпрограмата извежда факултет, специалност и формата на обучение,"
+		<< "\nза напускане на програмата напишете esc или еск."
+		<< "\n!Не са включени специалностите от филиал Любен Каравелов гр.Кърджали" << std::endl;
+	std::cout << "Въведете факултетен номер:" << RESET;
+}
+//Message for exception
+void getExceptionMessage() {
+	std::cout << RED << "Невалиден номер!" << RESET << std::endl;
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+}
+//Check for exception
+bool haveBugOrException(std::string uniNumber) {
+	int number;
+	if (uniNumber.length() != 10) { return true; }
+	try { number = std::stoll(uniNumber); }
+	catch (const std::invalid_argument&) { return true; }
+	return false;
+}
+//Exception for bigger number from 25
+bool invalidYear(std::string uniNumber) {
+	time_t now = time(0);
+	tm localtime;
+	localtime_s(&localtime, &now);
+	int currentYear = localtime.tm_year + 1900;
+	std::ostringstream yr, yrrr;
+	yr << uniNumber[0] << uniNumber[1];
+
+	std::string yrr = std::to_string(currentYear);
+
+	yrrr << yrr[2] << yrr[3];
+
+	std::string year = yr.str();
+	std::string lastYearNumbers = yrrr.str();
+
+	if (stoi(year) > stoi(lastYearNumbers)) { return true; }
+	return false;
+}
+//Function that returns faculty:
+std::string getFaculty(std::string uniNumber) {
+	std::stringstream fu;
+	int num;
+	fu << uniNumber[2] << uniNumber[3];
+	fu >> num;
+	auto tt = PU_FACULTIES.find(num);
+	if (tt != PU_FACULTIES.end()) { return tt->second; }
+	return "";
+}
+//Function that returns speciality:
+std::string getSpeciality(std::string uniNumber) {
+	std::stringstream sp;
+	int num;
+	sp << uniNumber[2] << uniNumber[3] << uniNumber[4] << uniNumber[5];
+	sp >> num;
+	auto tp = PU_SPECIALITIES.find(num);
+	if (tp != PU_SPECIALITIES.end()) { return tp->second.speciality; }
+	return "";
+}
+//Function that returns form of education:
+std::string getFormOfEducation(std::string uniNumber) {
+	std::stringstream sp;
+	int num;
+	sp << uniNumber[2] << uniNumber[3] << uniNumber[4] << uniNumber[5];
+	sp >> num;
+	char mode = uniNumber[6];
+
+	//Finding by key:
+	auto it = PU_SPECIALITIES.find(num);
+	if (it != PU_SPECIALITIES.end()) {
+		if (it->first != 725 && mode == '1' && it->second.isRegular) {
+			return "Редовно";
+		}
+		if (it->first == 725 && mode == '3' && it->second.isRegular) {
+			return "Редовно";
+		}
+		if (mode == '2' && it->second.isNotRegular) {return "Задочно";}
+	}
+	return "";
+}
+//Function for current time:
+void showDataAndTime() {
+	time_t now = time(0);
+	tm localtime;
+	localtime_s(&localtime, &now);
+	std::cout << YELLOW << localtime.tm_hour << ':'
+		<< localtime.tm_min << ':' << localtime.tm_sec << RESET << '\t';
+
+	std::cout << YELLOW << localtime.tm_mday << '.'
+		<< localtime.tm_mon + 1 << '.' << localtime.tm_year + 1900 << RESET << std::endl;
+}
+//Function for the main opersation: target:to minimalize the main method
+void findPuStudent() {
+
+	std::string uniNumber;
+	std::string studentFaculty;
+	std::string studentSpeciality;
+	std::string studentFormOfEducation;
+
+	while (true) {
+		pauseProgram();
+		printTitle();
+		showDataAndTime();
+		printInfo();
+		getline(std::cin, uniNumber);
+		//for breaking form the program
+		if (uniNumber == "esc" || uniNumber == "ESC"
+			|| uniNumber == "еск" || uniNumber == "ЕСК") {
+			break;
+		}
+		if (haveBugOrException(uniNumber)) {getExceptionMessage(); continue;}
+		if (invalidYear(uniNumber)) {getExceptionMessage(); continue;}
+		studentFaculty = getFaculty(uniNumber);
+		studentSpeciality = getSpeciality(uniNumber);
+		studentFormOfEducation = getFormOfEducation(uniNumber);
+
+		//If methods return empty string:
+		if (studentFaculty == "" || studentSpeciality == "" || studentFormOfEducation == "") {
+			getExceptionMessage(); continue;
+		}
+		//Result:
+		std::cout << YELLOW << "Факултет: " << RESET << GREEN << studentFaculty << RESET << std::endl;
+		std::cout << YELLOW << "Специалност: " << RESET << GREEN << studentSpeciality << RESET << std::endl;
+		std::cout << YELLOW << "Форма на обучение: " << RESET << GREEN << studentFormOfEducation << RESET << std::endl;
+		std::this_thread::sleep_for(std::chrono::seconds(3));
+	}
+}
+int main() {
+	//Important for working with Bulgarian:
+	setlocale(LC_ALL, "Bulgarian");
+	findPuStudent();
+	std::cout << GREEN;
+	return 0;
+}
